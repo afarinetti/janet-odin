@@ -2,8 +2,6 @@ package janet
 
 import "core:c"
 
-foreign import janet_lib {"../libjanet.a", "system:c"}
-
 // JanetError - Error type for Janet operations
 JanetError :: struct {
 	msg:    cstring,
@@ -12,11 +10,7 @@ JanetError :: struct {
 }
 
 // janet_error_format - Format an error message from a Janet value
-janet_error_format :: proc(err: Janet) -> cstring {
-	return _janet_error_format(err)
-}
-
-foreign janet_lib {
-	@(link_name = "janet_error_format")
-	_janet_error_format :: proc(err: Janet) -> cstring ---
+// Uses janet_to_string internally since Janet doesn't have a dedicated error formatter
+janet_error_format :: proc(err: Janet) -> JanetString {
+	return _janet_to_string(err)
 }

@@ -107,14 +107,27 @@ JanetVM :: struct {
 JanetFunction :: struct {
 }
 JanetArray :: struct {
+	gc:       rawptr,
+	count:    i32,
+	capacity: i32,
+	data:     ^Janet,
 }
 JanetBuffer :: struct {
+	gc:       rawptr,
+	count:    i32,
+	capacity: i32,
+	data:     ^u8,
 }
 JanetTable :: struct {
+	gc:         rawptr,
+	count:      i32,
+	capacity:   i32,
+	mutability: i32,
+	data:       ^JanetKV,
 }
 JanetFiber :: struct {
 }
-JanetCFunction :: proc "c" (argc: i32, argv: [^]Janet) -> Janet
+JanetCFunction :: proc "c" (argc: i32, argv: ^Janet) -> Janet
 
 // String types (const uint8_t*)
 JanetString :: distinct ^u8
@@ -131,4 +144,45 @@ JanetPointer :: rawptr
 JanetKV :: struct {
 	key:   Janet,
 	value: Janet,
+}
+
+// Abstract type definition
+JanetAbstractType :: struct {
+	name:      cstring,
+	finalizer: proc "c" (data: rawptr, len: i32),
+	gcmark:    proc "c" (data: rawptr, len: i32),
+	migrate:   proc "c" (data: rawptr, len: i32),
+	format:    proc "c" (data: rawptr, len: i32, buf: ^JanetBuffer),
+	compare:   proc "c" (a: rawptr, b: rawptr) -> i32,
+	hash:      proc "c" (data: rawptr, len: i32) -> i32,
+	marshal:   proc "c" (data: rawptr, len: i32, buf: ^JanetBuffer),
+	unmarshal: proc "c" (data: rawptr, len: i32, buf: ^JanetBuffer) -> rawptr,
+	tostring:  proc "c" (data: rawptr, len: i32, buf: ^JanetBuffer),
+}
+
+// Function registration
+JanetReg :: struct {
+	name: cstring,
+	cfun: JanetCFunction,
+	doc:  cstring,
+}
+
+// Parser state
+JanetParser :: struct {
+	// Opaque parser state
+	_: [0]u8,
+}
+
+// Method definition
+JanetMethod :: struct {
+	name: cstring,
+	cfun: JanetCFunction,
+}
+
+// Random number generator
+JanetRNG :: struct {
+	a: u64,
+	b: u64,
+	c: u64,
+	d: u64,
 }

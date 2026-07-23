@@ -1,0 +1,41 @@
+{
+  "name": "janet-odin",
+  "version": "0.1.0",
+  "description": "Janet language FFI bindings for Odin",
+  "author": "Janet-Odin Contributors",
+  "license": "MIT",
+  "dependencies": {},
+  "foreign-labels": ["janet_lib"],
+  "foreign-libraries": ["janet"],
+  "library-dirs": ["."],
+  "packages": [
+    {
+      "name": "janet",
+      "path": "janet",
+      "description": "Core Janet FFI bindings"
+    },
+    {
+      "name": "janet_engine",
+      "path": "janet_engine",
+      "description": "High-level Janet engine wrapper"
+    }
+  ],
+  "tests": [
+    {
+      "name": "janet_tests",
+      "path": "tests",
+      "description": "Integration tests"
+    }
+  ],
+  "build": {
+    "odin-version": ">=0.14.0",
+    "c-compiler": "clang",
+    "optimization": "O2"
+  },
+  "notes": {
+    "janet-version": "1.41.2",
+    "janet-submodule": "vendor/janet",
+    "build-instructions": "1. cd vendor/janet && meson setup build && ninja -C build && cp build/libjanet.a ..",
+    "usage": "import janet \"janet-odin/janet\" and janet_engine \"janet-odin/janet_engine\""
+  }
+}
