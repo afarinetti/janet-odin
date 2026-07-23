@@ -2,7 +2,7 @@ package janet
 
 import "core:c"
 
-foreign import janet_lib {"../../libjanet.a", "system:c"}
+foreign import janet_lib {"../libjanet.a", "system:c"}
 
 // JanetError - Error type for Janet operations
 JanetError :: struct {

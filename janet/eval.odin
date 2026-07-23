@@ -2,7 +2,7 @@ package janet
 
 import "core:c"
 
-foreign import janet_lib {"../../libjanet.a", "system:c"}
+foreign import janet_lib {"../libjanet.a", "system:c"}
 
 // Compile status enum
 JanetCompileStatus :: enum i32 {

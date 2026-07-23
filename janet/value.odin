@@ -2,7 +2,7 @@ package janet
 
 import "core:c"
 
-foreign import janet_lib {"../../libjanet.a", "system:c"}
+foreign import janet_lib {"../libjanet.a", "system:c"}
 
 // Type checking
 
@@ -43,8 +43,10 @@ janet_wrap_number :: proc(x: f64) -> Janet {
 	return _janet_wrap_number(x)
 }
 
+// janet_wrap_integer - wraps i32 as a Janet number
+// Note: Janet uses janet_wrap_number internally for integers
 janet_wrap_integer :: proc(x: i32) -> Janet {
-	return _janet_wrap_integer(x)
+	return _janet_wrap_number(f64(x))
 }
 
 janet_wrap_string :: proc(x: JanetString) -> Janet {
@@ -109,8 +111,9 @@ janet_unwrap_number :: proc(x: Janet) -> f64 {
 	return _janet_unwrap_number(x)
 }
 
+// janet_unwrap_integer - unwraps a Janet number as i32
 janet_unwrap_integer :: proc(x: Janet) -> i32 {
-	return _janet_unwrap_integer(x)
+	return i32(_janet_unwrap_number(x))
 }
 
 janet_unwrap_string :: proc(x: Janet) -> JanetString {
@@ -191,9 +194,6 @@ foreign janet_lib {
 	@(link_name = "janet_wrap_number")
 	_janet_wrap_number :: proc(x: f64) -> Janet ---
 
-	@(link_name = "janet_wrap_integer")
-	_janet_wrap_integer :: proc(x: i32) -> Janet ---
-
 	@(link_name = "janet_wrap_string")
 	_janet_wrap_string :: proc(x: JanetString) -> Janet ---
 
@@ -238,9 +238,6 @@ foreign janet_lib {
 
 	@(link_name = "janet_unwrap_number")
 	_janet_unwrap_number :: proc(x: Janet) -> f64 ---
-
-	@(link_name = "janet_unwrap_integer")
-	_janet_unwrap_integer :: proc(x: Janet) -> i32 ---
 
 	@(link_name = "janet_unwrap_string")
 	_janet_unwrap_string :: proc(x: Janet) -> JanetString ---
