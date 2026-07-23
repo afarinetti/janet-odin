@@ -25,25 +25,42 @@ janet_truthy :: proc(x: Janet) -> bool {
 }
 
 // Wrap functions - convert Odin types to Janet values
+// On ARM64 (non-nanbox), Janet is a struct {union as; JanetType type}
 
 janet_wrap_nil :: proc() -> Janet {
-	return _janet_wrap_nil()
+	result: Janet
+	result.as.u64 = 0
+	result.type = JanetType.NIL
+	return result
 }
 
 janet_wrap_true :: proc() -> Janet {
-	return _janet_wrap_true()
+	result: Janet
+	result.as.u64 = 1
+	result.type = JanetType.BOOLEAN
+	return result
 }
 
 janet_wrap_false :: proc() -> Janet {
-	return _janet_wrap_false()
+	result: Janet
+	result.as.u64 = 0
+	result.type = JanetType.BOOLEAN
+	return result
 }
 
 janet_wrap_boolean :: proc(x: bool) -> Janet {
-	return _janet_wrap_boolean(x ? 1 : 0)
+	result: Janet
+	result.as.u64 = x ? 1 : 0
+	result.type = JanetType.BOOLEAN
+	return result
 }
+
 // janet_wrap_integer - wraps i32 as a Janet number
 janet_wrap_integer :: proc(x: i32) -> Janet {
-	return _janet_wrap_number(f64(x))
+	result: Janet
+	result.as.number = f64(x)
+	result.type = JanetType.NUMBER
+	return result
 }
 
 
@@ -205,12 +222,18 @@ janet_collect :: proc() {
 
 // janet_wrap_integer64 - wraps i64 as a Janet number
 janet_wrap_integer64 :: proc(x: i64) -> Janet {
-	return _janet_wrap_number(f64(x))
+	result: Janet
+	result.as.number = f64(x)
+	result.type = JanetType.NUMBER
+	return result
 }
 
 // janet_wrap_number - wraps f64 as a Janet number
 janet_wrap_number :: proc(x: f64) -> Janet {
-	return _janet_wrap_number(x)
+	result: Janet
+	result.as.number = x
+	result.type = JanetType.NUMBER
+	return result
 }
 
 // janet_unwrap_integer64 - unwraps a Janet number as i64

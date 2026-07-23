@@ -90,43 +90,63 @@ JanetFiberStatus :: enum i32 {
 	ALIVE   = 19,
 }
 
-// JanetValue union - nanboxed union matching Janet's union Janet
-// On 64-bit platforms, Janet uses NANBOX_64 encoding
-Janet :: struct #raw_union {
-	u64:     u64,
-	i64:     i64,
-	number:  f64,
-	pointer: rawptr,
+// Janet - The core Janet value type
+// On ARM64 (non-nanbox), this is a struct with union + type tag
+// On x86_64 (nanbox), this would be a raw union
+Janet :: struct {
+	as:   JanetUnion,
+	type: JanetType,
+}
+
+JanetUnion :: struct #raw_union {
+	u64:      u64,
+	i64:      i64,
+	number:   f64,
+	integer:  i32,
+	pointer:  rawptr,
+	cpointer: rawptr,
 }
 
 // Opaque VM type
 JanetVM :: struct {
 }
 
-// GC-managed types (opaque pointers)
+// GC object header - all GC-managed types start with this
+JanetGCObject :: struct {
+	flags: i32,
+	data:  rawptr, // union: next pointer or refcount
+}
+
+// GC-managed types
 JanetFunction :: struct {
 }
+
 JanetArray :: struct {
-	gc:       rawptr,
+	gc:       JanetGCObject,
 	count:    i32,
 	capacity: i32,
 	data:     ^Janet,
 }
+
 JanetBuffer :: struct {
-	gc:       rawptr,
+	gc:       JanetGCObject,
 	count:    i32,
 	capacity: i32,
 	data:     ^u8,
 }
+
 JanetTable :: struct {
-	gc:         rawptr,
-	count:      i32,
-	capacity:   i32,
-	mutability: i32,
-	data:       ^JanetKV,
+	gc:       JanetGCObject,
+	count:    i32,
+	capacity: i32,
+	deleted:  i32,
+	data:     ^JanetKV,
+	proto:    ^JanetTable,
 }
+
 JanetFiber :: struct {
 }
+
 JanetCFunction :: proc "c" (argc: i32, argv: ^Janet) -> Janet
 
 // String types (const uint8_t*)

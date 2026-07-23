@@ -50,13 +50,14 @@ janet_engine_init :: proc(cfg: EngineConfig) -> (^JanetEngine, bool) {
 }
 
 // janet_engine_deinit - Shutdown a Janet engine
+// NOTE: janet_init() sets up a global thread-local VM, not one allocated
+// via janet_vm_alloc(). We must NOT call janet_vm_free on it.
 janet_engine_deinit :: proc(eng: ^JanetEngine) {
 	if eng != nil {
 		// Unroot the environment before teardown
 		janet.janet_gcunroot(eng.env_root)
-		if eng.vm != nil {
-			janet.janet_vm_free(eng.vm)
-		}
+		// Do NOT call janet_vm_free - the VM belongs to janet_init's global state.
+		// Only free VMs that were explicitly allocated via janet_vm_alloc.
 		free(eng)
 	}
 }
