@@ -3,6 +3,7 @@ package janet
 foreign import janet_lib {"../../libjanet.a", "system:c"}
 
 foreign janet_lib {
+	// VM lifecycle
 	@(link_name = "janet_init")
 	janet_init :: proc() -> i32 ---
 
