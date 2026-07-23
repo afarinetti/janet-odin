@@ -502,16 +502,16 @@ foreign janet_lib {
 
 	// ===== Resolve / def / var =====
 	@(link_name = "janet_resolve")
-	_janet_resolve :: proc(env: ^JanetTable, sym: JanetSymbol) -> Janet ---
+	_janet_resolve :: proc(env: ^JanetTable, sym: JanetSymbol, out: ^Janet) -> JanetBindingType ---
 
 	@(link_name = "janet_resolve_ext")
-	_janet_resolve_ext :: proc(env: ^JanetTable, sym: JanetSymbol) -> Janet ---
+	_janet_resolve_ext :: proc(env: ^JanetTable, sym: JanetSymbol) -> JanetBinding ---
 
 	@(link_name = "janet_def")
-	_janet_def :: proc(env: ^JanetTable, name: JanetSymbol, value: Janet, doc: cstring) ---
+	_janet_def :: proc(env: ^JanetTable, name: cstring, value: Janet, doc: cstring) ---
 
 	@(link_name = "janet_var")
-	_janet_var :: proc(env: ^JanetTable, name: JanetSymbol, value: Janet, doc: cstring) ---
+	_janet_var :: proc(env: ^JanetTable, name: cstring, value: Janet, doc: cstring) ---
 
 	@(link_name = "janet_cfuns")
 	_janet_cfuns :: proc(env: ^JanetTable, regprefix: cstring, cfuns: ^JanetReg) ---
@@ -623,4 +623,23 @@ foreign janet_lib {
 
 	@(link_name = "janet_unmarshal")
 	_janet_unmarshal :: proc(data: ^u8, len: c.size_t, flags: i32, env: ^JanetTable, next: ^^u8) -> Janet ---
+
+	// ===== Embedding Support =====
+	@(link_name = "janet_cryptorand")
+	_janet_cryptorand :: proc(out: ^u8, n: c.size_t) -> i32 ---
+
+	@(link_name = "janet_init_hash_key")
+	_janet_init_hash_key :: proc(key: ^u8) ---
+
+	@(link_name = "janet_env_lookup")
+	_janet_env_lookup :: proc(env: ^JanetTable) -> ^JanetTable ---
+
+	@(link_name = "janet_resolve_core")
+	_janet_resolve_core :: proc(name: cstring) -> Janet ---
+
+	@(link_name = "janet_cfuns_prefix")
+	_janet_cfuns_prefix :: proc(env: ^JanetTable, regprefix: cstring, cfuns: ^JanetReg) ---
+
+	@(link_name = "janet_getmethod")
+	_janet_getmethod :: proc(method: JanetKeyword, methods: ^JanetMethod, out: ^Janet) -> i32 ---
 }

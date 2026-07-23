@@ -90,6 +90,16 @@ JanetFiberStatus :: enum i32 {
 	ALIVE   = 19,
 }
 
+// JanetBindingType enum - returned by janet_resolve
+JanetBindingType :: enum i32 {
+	NONE          = 0,
+	VARIABLE      = 1,
+	DEF           = 2,
+	MACRO         = 3,
+	DYNAMIC_DEF   = 4,
+	DYNAMIC_MACRO = 5,
+}
+
 // Janet - The core Janet value type
 // On ARM64 (non-nanbox), this is a struct with union + type tag
 // On x86_64 (nanbox), this would be a raw union
@@ -119,6 +129,24 @@ JanetGCObject :: struct {
 
 // GC-managed types
 JanetFunction :: struct {
+	gc:  JanetGCObject,
+	def: ^JanetFuncDef,
+}
+
+JanetFuncDef :: struct {
+	gc:             JanetGCObject,
+	environments:   ^i32,
+	constants:      ^Janet,
+	defs:           ^^JanetFuncDef,
+	bytecode:       ^u32,
+	closure_bitset: ^u32,
+	sourcemap:      rawptr,
+	source:         JanetString,
+	name:           JanetString,
+	min_arity:      i32,
+	max_arity:      i32,
+	slotcount:      i32,
+	flags:          u32,
 }
 
 JanetArray :: struct {
@@ -145,6 +173,17 @@ JanetTable :: struct {
 }
 
 JanetFiber :: struct {
+	gc:         JanetGCObject,
+	flags:      i32,
+	frame:      i32,
+	stackstart: i32,
+	stacktop:   i32,
+	capacity:   i32,
+	maxstack:   i32,
+	env:        ^JanetTable,
+	data:       ^Janet,
+	child:      ^JanetFiber,
+	last_value: Janet,
 }
 
 JanetCFunction :: proc "c" (argc: i32, argv: ^Janet) -> Janet
@@ -205,4 +244,11 @@ JanetRNG :: struct {
 	b: u64,
 	c: u64,
 	d: u64,
+}
+
+// JanetBinding - returned by janet_resolve_ext
+JanetBinding :: struct {
+	type:        JanetBindingType,
+	value:       Janet,
+	deprecation: i32,
 }
