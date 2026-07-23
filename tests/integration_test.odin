@@ -25,6 +25,12 @@ run_janet_test_suite :: proc(t: ^testing.T, suite_name: string, test_file: strin
 	assert(ok, "janet_engine_init failed")
 	defer janet_engine.janet_engine_deinit(eng)
 
+	// Set :executable dynamic (Janet shell does this, but our bindings don't)
+	// Required by suite-ev and suite-os which use (dyn :executable)
+	executable_key := janet.janet_wrap_keyword(janet.janet_ckeyword("executable"))
+	executable_val := janet.janet_wrap_string(janet.janet_cstring("janet"))
+	janet.janet_table_put(eng.env, executable_key, executable_val)
+
 	// Load and execute test file using janet_dobytes (not janet_dostring)
 	// janet_dostring expects null-terminated C string; file bytes are not null-terminated
 	test_data, test_err := os.read_entire_file_from_path(test_file, context.allocator)
@@ -198,30 +204,36 @@ test_janet_suite_ev2_via_odin :: proc(t: ^testing.T) {
 
 @(test)
 test_janet_suite_boot_via_odin :: proc(t: ^testing.T) {
-	fmt.printf("suite-boot: skipped (requires full Janet runtime environment)\n")
+	// suite-boot tests compilation internals, stream operations, and curenv depth
+	// Requires Janet's full environment hierarchy (root-env prototype chain)
+	fmt.printf("suite-boot: skipped (requires Janet's environment hierarchy)\n")
 	return
 }
 
 @(test)
 test_janet_suite_bundle_via_odin :: proc(t: ^testing.T) {
-	fmt.printf("suite-bundle: skipped (requires file system operations and module loading)\n")
+	// suite-bundle requires temp directory creation and module loading from disk
+	fmt.printf("suite-bundle: skipped (requires file system operations)\n")
 	return
 }
 
 @(test)
 test_janet_suite_ev_via_odin :: proc(t: ^testing.T) {
+	// suite-ev requires subprocess spawning via os/spawn
 	fmt.printf("suite-ev: skipped (requires subprocess spawning)\n")
 	return
 }
 
 @(test)
 test_janet_suite_filewatch_via_odin :: proc(t: ^testing.T) {
-	fmt.printf("suite-filewatch: skipped (filewatch not supported on this platform)\n")
+	// Janet C library doesn't support filewatch on macOS
+	fmt.printf("suite-filewatch: skipped (Janet library limitation on macOS)\n")
 	return
 }
 
 @(test)
 test_janet_suite_os_via_odin :: proc(t: ^testing.T) {
+	// suite-os requires subprocess execution via os/execute
 	fmt.printf("suite-os: skipped (requires subprocess execution)\n")
 	return
 }
