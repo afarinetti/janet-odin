@@ -13,11 +13,13 @@ test_all :: proc(t: ^testing.T) {
 	// Initialize Janet once
 	result := janet.janet_init()
 	assert(result == 0, "janet_init failed")
+	defer janet.janet_deinit()
 	fmt.println("janet_init: ok")
 
 	// Test engine init
 	eng, ok := janet_engine.janet_engine_init({})
 	assert(ok, "janet_engine_init failed")
+	defer janet_engine.janet_engine_deinit(eng)
 	fmt.println("engine init: ok")
 
 	// Test register
@@ -30,12 +32,13 @@ test_all :: proc(t: ^testing.T) {
 
 	ok = janet_engine.janet_register(eng, "my_add", my_add)
 	assert(ok, "janet_register failed")
-	fmt.println("registered my_add")
+	fmt.println("register: ok")
 
-	// Test value wrapping
+	// Test value wrapping - separate test to isolate VM issues
 	ival := janet.janet_wrap_integer(42)
-	assert(janet.janet_unwrap_integer(ival) == 42, "integer wrap/unwrap failed")
-	fmt.println("wrap/unwrap: ok")
+	unwrapped := janet.janet_unwrap_integer(ival)
+	assert(unwrapped == 42, "integer wrap/unwrap failed")
+	fmt.println("integer wrap/unwrap: ok")
 
 	fmt.println("all tests passed")
 }
