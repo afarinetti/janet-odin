@@ -31,9 +31,10 @@ run_janet_test_suite :: proc(t: ^testing.T, suite_name: string, test_file: strin
 	defer delete(test_data)
 
 	test_out: janet.Janet
-	status := janet.janet_dostring(
+	status := janet.janet_dobytes(
 		eng.env,
-		transmute(cstring)raw_data(test_data),
+		raw_data(test_data),
+		i32(len(test_data)),
 		transmute(cstring)raw_data(test_file),
 		&test_out,
 	)
@@ -68,4 +69,144 @@ test_janet_suite_string_via_odin :: proc(t: ^testing.T) {
 @(test)
 test_janet_suite_buffer_via_odin :: proc(t: ^testing.T) {
 	run_janet_test_suite(t, "suite-buffer", "suite-buffer.janet")
+}
+
+@(test)
+test_janet_suite_tuple_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-tuple", "suite-tuple.janet")
+}
+
+@(test)
+test_janet_suite_struct_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-struct", "suite-struct.janet")
+}
+
+@(test)
+test_janet_suite_math_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-math", "suite-math.janet")
+}
+
+@(test)
+test_janet_suite_specials_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-specials", "suite-specials.janet")
+}
+
+@(test)
+test_janet_suite_compile_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-compile", "suite-compile.janet")
+}
+
+@(test)
+test_janet_suite_parse_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-parse", "suite-parse.janet")
+}
+
+@(test)
+test_janet_suite_pp_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-pp", "suite-pp.janet")
+}
+
+@(test)
+test_janet_suite_inttypes_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-inttypes", "suite-inttypes.janet")
+}
+
+@(test)
+test_janet_suite_marsh_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-marsh", "suite-marsh.janet")
+}
+
+@(test)
+test_janet_suite_os_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-os", "suite-os.janet")
+}
+
+@(test)
+test_janet_suite_io_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-io", "suite-io.janet")
+}
+
+@(test)
+test_janet_suite_corelib_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-corelib", "suite-corelib.janet")
+}
+
+@(test)
+test_janet_suite_ffi_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-ffi", "suite-ffi.janet")
+}
+
+@(test)
+test_janet_suite_capi_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-capi", "suite-capi.janet")
+}
+
+@(test)
+test_janet_suite_cfuns_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-cfuns", "suite-cfuns.janet")
+}
+
+@(test)
+test_janet_suite_debug_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-debug", "suite-debug.janet")
+}
+
+@(test)
+test_janet_suite_peg_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-peg", "suite-peg.janet")
+}
+
+@(test)
+test_janet_suite_strtod_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-strtod", "suite-strtod.janet")
+}
+
+@(test)
+test_janet_suite_symcache_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-symcache", "suite-symcache.janet")
+}
+
+@(test)
+test_janet_suite_unknown_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-unknown", "suite-unknown.janet")
+}
+
+@(test)
+test_janet_suite_vm_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-vm", "suite-vm.janet")
+}
+
+@(test)
+test_janet_suite_boot_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-boot", "suite-boot.janet")
+}
+
+@(test)
+test_janet_suite_net_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-net", "suite-net.janet")
+}
+
+@(test)
+test_janet_suite_filewatch_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-filewatch", "suite-filewatch.janet")
+}
+
+@(test)
+test_janet_suite_bundle_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-bundle", "suite-bundle.janet")
+}
+
+@(test)
+test_janet_suite_asm_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-asm", "suite-asm.janet")
+}
+
+@(test)
+test_janet_suite_ev_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-ev", "suite-ev.janet")
+}
+
+@(test)
+test_janet_suite_ev2_via_odin :: proc(t: ^testing.T) {
+	run_janet_test_suite(t, "suite-ev2", "suite-ev2.janet")
 }
