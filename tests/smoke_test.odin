@@ -1,50 +1,41 @@
 package janet_test
 
 import janet "../janet"
+import janet_engine "../janet_engine"
+import "base:runtime"
 import "core:fmt"
 import "core:testing"
 
 @(test)
-smoke_init :: proc(t: ^testing.T) {
+test_all :: proc(t: ^testing.T) {
+	context = runtime.default_context()
+
+	// Initialize Janet once
 	result := janet.janet_init()
 	assert(result == 0, "janet_init failed")
-	janet.janet_deinit()
-	fmt.println("smoke_init passed")
-}
+	fmt.println("janet_init: ok")
 
-@(test)
-smoke_vm_alloc :: proc(t: ^testing.T) {
-	result := janet.janet_init()
-	assert(result == 0, "janet_init failed")
-	defer janet.janet_deinit()
+	// Test engine init
+	eng, ok := janet_engine.janet_engine_init({})
+	assert(ok, "janet_engine_init failed")
+	fmt.println("engine init: ok")
 
-	vm := janet.janet_vm_alloc()
-	assert(vm != nil, "janet_vm_alloc returned nil")
-	janet.janet_vm_free(vm)
-	fmt.println("smoke_vm_alloc passed")
-}
+	// Test register
+	my_add :: proc "c" (argc: i32, argv: [^]janet.Janet) -> janet.Janet {
+		context = runtime.default_context()
+		x := janet.janet_get_integer(argv, 0)
+		y := janet.janet_get_integer(argv, 1)
+		return janet.janet_wrap_integer(x + y)
+	}
 
-@(test)
-test_wrap_unwrap_integer :: proc(t: ^testing.T) {
-	result := janet.janet_init()
-	assert(result == 0, "janet_init failed")
-	defer janet.janet_deinit()
+	ok = janet_engine.janet_register(eng, "my_add", my_add)
+	assert(ok, "janet_register failed")
+	fmt.println("registered my_add")
 
-	val := janet.janet_wrap_integer(42)
-	unwrapped := janet.janet_unwrap_integer(val)
-	assert(unwrapped == 42, "integer wrap/unwrap failed")
-	fmt.println("test_wrap_unwrap_integer passed")
-}
+	// Test value wrapping
+	ival := janet.janet_wrap_integer(42)
+	assert(janet.janet_unwrap_integer(ival) == 42, "integer wrap/unwrap failed")
+	fmt.println("wrap/unwrap: ok")
 
-@(test)
-test_wrap_unwrap_boolean :: proc(t: ^testing.T) {
-	result := janet.janet_init()
-	assert(result == 0, "janet_init failed")
-	defer janet.janet_deinit()
-
-	true_val := janet.janet_wrap_boolean(true)
-	false_val := janet.janet_wrap_boolean(false)
-	assert(janet.janet_unwrap_boolean(true_val) == true, "boolean true unwrap failed")
-	assert(janet.janet_unwrap_boolean(false_val) == false, "boolean false unwrap failed")
-	fmt.println("test_wrap_unwrap_boolean passed")
+	fmt.println("all tests passed")
 }

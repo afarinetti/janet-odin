@@ -114,8 +114,7 @@ JanetTable :: struct {
 }
 JanetFiber :: struct {
 }
-JanetCFunction :: struct {
-}
+JanetCFunction :: proc "c" (argc: i32, argv: [^]Janet) -> Janet
 
 // String types (const uint8_t*)
 JanetString :: distinct ^u8
