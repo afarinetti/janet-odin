@@ -253,3 +253,7 @@ janet_csymbol :: proc(s: cstring) -> JanetSymbol {
 janet_ckeyword :: proc(s: cstring) -> JanetKeyword {
 	return JanetKeyword(_janet_csymbol(s))
 }
+// Environment definition helpers
+janet_def :: proc(env: ^JanetTable, name: cstring, value: Janet, doc: cstring) {
+	_janet_def(env, name, value, doc)
+}

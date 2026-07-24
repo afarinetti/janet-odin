@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Janet language FFI bindings for Odin",
   "author": "Janet-Odin Contributors",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {},
   "foreign-labels": ["janet_lib"],
   "foreign-libraries": ["janet"],

@@ -329,6 +329,7 @@ foreign janet_lib {
 	@(link_name = "janet_cstring")
 	_janet_cstring :: proc(cstr: cstring) -> JanetString ---
 
+
 	@(link_name = "janet_string")
 	_janet_string :: proc(buf: ^u8, len: i32) -> JanetString ---
 
