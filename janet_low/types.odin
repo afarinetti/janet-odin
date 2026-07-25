@@ -255,10 +255,29 @@ JanetReg :: struct {
 	doc:  cstring,
 }
 
-// Parser state
-JanetParser :: struct {
-	// Opaque parser state
+// Opaque parse state - only ever referenced as a pointer (C `JanetParseState`)
+JanetParseState :: struct {
 	_: [0]u8,
+}
+
+// Parser state - mirrors C `struct JanetParser` (janet.h:1166).
+// Concrete (not opaque) so callers can allocate one and pass it to janet_parser_init.
+JanetParser :: struct {
+	args:       ^Janet,
+	error:      cstring,
+	states:     ^JanetParseState,
+	buf:        ^u8,
+	argcount:   uint,
+	argcap:     uint,
+	statecount: uint,
+	statecap:   uint,
+	bufcount:   uint,
+	bufcap:     uint,
+	line:       uint,
+	column:     uint,
+	pending:    uint,
+	lookback:   i32,
+	flag:       i32,
 }
 
 // Method definition

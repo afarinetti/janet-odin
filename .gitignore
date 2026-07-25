@@ -1,8 +1,13 @@
 *.a
+
+# Build output directory (libjanet.a staging, test runner, example binaries)
+build/
+
+# Odin test/build default output artifacts
 janet_tests
-.superpowers
+tests.bin
+main.bin
+main_test
 high_level_example
 high_level_example.bin
 high_level_test
-main.bin
-main_test
