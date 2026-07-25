@@ -1,3 +1,8 @@
 *.a
 janet_tests
 .superpowers
+high_level_example
+high_level_example.bin
+high_level_test
+main.bin
+main_test

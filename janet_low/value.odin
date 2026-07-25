@@ -1,4 +1,4 @@
-package janet
+package janet_low
 
 import "core:c"
 
@@ -256,4 +256,30 @@ janet_ckeyword :: proc(s: cstring) -> JanetKeyword {
 // Environment definition helpers
 janet_def :: proc(env: ^JanetTable, name: cstring, value: Janet, doc: cstring) {
 	_janet_def(env, name, value, doc)
+}
+
+// Resolve functions
+janet_resolve :: proc(env: ^JanetTable, sym: JanetSymbol, out: ^Janet) -> JanetBindingType {
+	return _janet_resolve(env, sym, out)
+}
+
+// Error handling
+janet_panic :: proc(msg: cstring) {
+	_janet_panic(msg)
+}
+
+// Iteration
+janet_next :: proc(ds: Janet, key: Janet, out: ^Janet) -> i32 {
+	return _janet_next(ds, key, out)
+}
+
+// String length
+janet_string_length :: proc(s: JanetString) -> i32 {
+	head := janet_string_head(s)
+	return head^.length
+}
+
+// Struct head access
+janet_struct_head :: proc(st: JanetStruct) -> ^JanetStructHead {
+	return _janet_struct_head(st)
 }

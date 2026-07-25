@@ -1,6 +1,6 @@
 package janet_engine
 
-import janet "../janet"
+import janet_low "../janet_low"
 import "core:c"
 import "core:os"
 import "core:time"
@@ -24,7 +24,7 @@ HotReloadEvent :: enum i32 {
 WatchedFile :: struct {
 	path:     string,
 	mtime:    i64,
-	func_ref: janet.Janet,
+	func_ref: janet_low.Janet,
 }
 
 // HotReloadState - Internal state for hot-reload manager
@@ -107,8 +107,8 @@ janet_hotreload_reload :: proc(state: ^HotReloadState, path: string) -> bool {
 	defer delete(data)
 
 	// Compile the Janet code
-	result: janet.Janet
-	status := janet.janet_dostring(
+	result: janet_low.Janet
+	status := janet_low.janet_dostring(
 		state.eng.env,
 		transmute(cstring)raw_data(data),
 		transmute(cstring)raw_data(path),
@@ -166,7 +166,7 @@ janet_hotreload_watch :: proc(state: ^HotReloadState, path: string) -> bool {
 	watched := WatchedFile {
 		path     = path,
 		mtime    = mtime,
-		func_ref = janet.janet_wrap_nil(),
+		func_ref = janet_low.janet_wrap_nil(),
 	}
 	append(&state.files, watched)
 	return true

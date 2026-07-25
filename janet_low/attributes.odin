@@ -1,4 +1,4 @@
-package janet
+package janet_low
 
 // janet_function attribute - proc attribute for Janet binding registration
 // Usage: @(janet_function("name", "summary"))

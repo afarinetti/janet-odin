@@ -1,4 +1,4 @@
-package janet
+package janet_low
 
 import "core:c"
 import "core:mem"
@@ -46,5 +46,12 @@ janet_array_pop :: proc(a: ^JanetArray) -> Janet {
 janet_array_length :: proc(a: ^JanetArray) -> i32 {
 	return a^.count
 }
+
+// Tuple operations
+janet_tuple_length :: proc(t: JanetTuple) -> i32 {
+	head := janet_tuple_head(t)
+	return head^.length
+}
+
 
 // Foreign declarations are in janet.odin

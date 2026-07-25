@@ -1,4 +1,4 @@
-package janet
+package janet_low
 
 import "core:c"
 

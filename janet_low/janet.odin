@@ -1,4 +1,4 @@
-package janet
+package janet_low
 
 import "core:c"
 
@@ -344,6 +344,15 @@ foreign janet_lib {
 
 	@(link_name = "janet_string_equal")
 	_janet_string_equal :: proc(lhs: JanetString, rhs: JanetString) -> i32 ---
+
+
+	@(link_name = "janet_struct_head")
+	_janet_struct_head :: proc(st: JanetStruct) -> ^JanetStructHead ---
+	@(link_name = "janet_string_head")
+	janet_string_head :: proc(s: JanetString) -> ^JanetStringHead ---
+
+	@(link_name = "janet_tuple_head")
+	janet_tuple_head :: proc(t: JanetTuple) -> ^JanetTupleHead ---
 
 	@(link_name = "janet_description")
 	_janet_description :: proc(x: Janet) -> JanetString ---

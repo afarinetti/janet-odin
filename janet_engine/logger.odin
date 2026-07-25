@@ -1,6 +1,6 @@
 package janet_engine
 
-import janet "../janet"
+import janet_low "../janet_low"
 import "core:c"
 import "core:fmt"
 

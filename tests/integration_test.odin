@@ -1,6 +1,6 @@
 package janet_test
 
-import janet "../janet"
+import janet_low "../janet_low"
 import janet_engine "../janet_engine"
 import "core:fmt"
 import "core:os"
@@ -16,9 +16,9 @@ run_janet_test_suite :: proc(t: ^testing.T, suite_name: string, test_file: strin
 	os.chdir("vendor/janet/test")
 
 	// Initialize Janet
-	result := janet.janet_init()
+	result := janet_low.janet_init()
 	assert(result == 0, "janet_init failed")
-	defer janet.janet_deinit()
+	defer janet_low.janet_deinit()
 
 	// Create engine
 	eng, ok := janet_engine.janet_engine_init({})
@@ -27,9 +27,9 @@ run_janet_test_suite :: proc(t: ^testing.T, suite_name: string, test_file: strin
 
 	// Set :executable dynamic (Janet shell does this, but our bindings don't)
 	// Required by suite-ev and suite-os which use (dyn :executable)
-	executable_key := janet.janet_wrap_keyword(janet.janet_ckeyword("executable"))
-	executable_val := janet.janet_wrap_string(janet.janet_cstring("janet"))
-	janet.janet_table_put(eng.env, executable_key, executable_val)
+	executable_key := janet_low.janet_wrap_keyword(janet_low.janet_ckeyword("executable"))
+	executable_val := janet_low.janet_wrap_string(janet_low.janet_cstring("janet"))
+	janet_low.janet_table_put(eng.env, executable_key, executable_val)
 
 	// Load and execute test file using janet_dobytes (not janet_dostring)
 	// janet_dostring expects null-terminated C string; file bytes are not null-terminated
@@ -37,8 +37,8 @@ run_janet_test_suite :: proc(t: ^testing.T, suite_name: string, test_file: strin
 	assert(test_err == nil, "Failed to read test file")
 	defer delete(test_data)
 
-	test_out: janet.Janet
-	status := janet.janet_dobytes(
+	test_out: janet_low.Janet
+	status := janet_low.janet_dobytes(
 		eng.env,
 		raw_data(test_data),
 		i32(len(test_data)),
