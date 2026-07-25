@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Install Odin
+      uses: laytan/setup-odin@v2
+      with:
+        release: dev-2026-07
+
+    - name: Install Janet build dependencies (meson, ninja)
+      run: pip install meson ninja
+
+    - name: Build Janet static library
+      run: |
+        chmod +x build_janet.sh
+        ./build_janet.sh
+
+    - name: Run Janet's own test suite through the Odin bindings
+      # The test_runner embeds a Janet VM via the janet-odin bindings and drives
+      # every suite-*.janet plus a compile-check of every examples/*.janet.
+      # `timeout` guards against any suite unexpectedly blocking the event loop.
+      run: |
+        mkdir -p build
+        odin build test_runner -out:build/test_runner
+        timeout 120 ./build/test_runner
+
+    - name: Run Odin bindings tests
+      # Janet's VM is thread-local (one VM per thread), so the bindings tests
+      # must run single-threaded to avoid cross-thread VM corruption.
+      run: |
+        odin test tests -out:build/janet_tests -define:ODIN_TEST_THREADS=1
+
+    - name: Build and run example programs
+      # Run from repo root so examples/main.odin's relative `examples/*.janet`
+      # loads resolve. Demo scripts tolerate Janet eval errors and exit 0.
+      run: |
+        odin build examples/main.odin -file -out:build/main_example
+        ./build/main_example
+        odin build examples/high_level_example.odin -file -out:build/high_level_example
+        ./build/high_level_example
+
+    - name: Check Odin formatting
+      # Non-blocking: this Odin dev build may not ship the `fmt` subcommand,
+      # and formatting drift should not fail the build.
+      run: |
+        for d in janet janet_engine janet_low test_runner tests; do
+          odin fmt -check "$d" || true
+        done

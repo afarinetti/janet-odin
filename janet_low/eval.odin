@@ -2,24 +2,26 @@ package janet_low
 
 import "core:c"
 
-// Compile status enum
+// Compile status enum (mirrors C `enum JanetCompileStatus` - janet.h:1677)
 JanetCompileStatus :: enum i32 {
-	OK     = 0,
-	ERROR  = 1,
-	CANCEL = 2,
+	OK    = 0,
+	ERROR = 1,
 }
 
-// Compile result from janet_compile
-JanetCompileResult :: struct {
-	status:  JanetCompileStatus,
-	fun:     ^JanetFunction,
-	mapping: JanetSourceMapping,
-}
-
-// Source mapping for error reporting
+// Source mapping - mirrors C `struct JanetSourceMapping` (janet.h:1081: {line, column})
 JanetSourceMapping :: struct {
-	source:      JanetString,
-	source_name: JanetString,
+	line:   i32,
+	column: i32,
+}
+
+// Compile result - mirrors C `struct JanetCompileResult` (janet.h:1681).
+// Field order is significant: it must match the C ABI for return-by-value.
+JanetCompileResult :: struct {
+	funcdef:       ^JanetFuncDef,
+	error:         JanetString,
+	macrofiber:    ^JanetFiber,
+	error_mapping: JanetSourceMapping,
+	status:        JanetCompileStatus,
 }
 
 // janet_compile - Compile Janet source to a function
@@ -40,6 +42,38 @@ janet_compile_lint :: proc(
 ) -> JanetCompileResult {
 	return _janet_compile_lint(source, env, source_name, lint)
 }
+
+// ===== Parser =====
+// Thin public wrappers over the underscore-prefixed foreign declarations
+// (see janet.odin). Exposed so callers can allocate a JanetParser and drive
+// parsing without reaching past the public API.
+
+// janet_parser_init - Initialize an allocated parser (call before use)
+janet_parser_init :: proc(p: ^JanetParser) {_janet_parser_init(p)}
+
+// janet_parser_deinit - Release parser-held resources
+janet_parser_deinit :: proc(p: ^JanetParser) {_janet_parser_deinit(p)}
+
+// janet_parser_consume - Feed one byte to the parser
+janet_parser_consume :: proc(p: ^JanetParser, c: u8) {_janet_parser_consume(p, c)}
+
+// janet_parser_eof - Signal end of input
+janet_parser_eof :: proc(p: ^JanetParser) {_janet_parser_eof(p)}
+
+// janet_parser_status - Raw status (0=root, 1=error, 2=pending, 3=dead)
+janet_parser_status :: proc(p: ^JanetParser) -> i32 {return _janet_parser_status(p)}
+
+// janet_parser_has_more - True if a parsed value is ready to produce
+janet_parser_has_more :: proc(p: ^JanetParser) -> bool {return _janet_parser_has_more(p) != 0}
+
+// janet_parser_produce - Pop the next parsed Janet value
+janet_parser_produce :: proc(p: ^JanetParser) -> Janet {return _janet_parser_produce(p)}
+
+// janet_parser_error - Error message when status == 1, else nil
+janet_parser_error :: proc(p: ^JanetParser) -> cstring {return _janet_parser_error(p)}
+
+// janet_parser_flush - Reset parser's pending buffer
+janet_parser_flush :: proc(p: ^JanetParser) {_janet_parser_flush(p)}
 
 // janet_dostring - Evaluate a string in the given environment
 // Returns 0 on success, non-zero on error
